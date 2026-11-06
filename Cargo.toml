@@ -2,10 +2,5 @@
 resolver = "3"
 exclude = [".scratch"]
 members = [
-    "labs/lab01-toolkit",
-    "labs/lab02-ownership",
-    "labs/lab03-domain-model",
-    "ml/01-perceptron",
-    "projects/guess_game",
     "practice/*",
 ]
