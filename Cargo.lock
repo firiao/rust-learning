@@ -27,6 +27,22 @@ name = "l06-borrowing"
 version = "0.1.0"
 
 [[package]]
+name = "l07-structs"
+version = "0.1.0"
+
+[[package]]
+name = "l08-match"
+version = "0.1.0"
+
+[[package]]
+name = "l09-enums"
+version = "0.1.0"
+
+[[package]]
+name = "l10-errors"
+version = "0.1.0"
+
+[[package]]
 name = "sandbox"
 version = "0.1.0"
 
