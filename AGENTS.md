@@ -86,8 +86,7 @@ cargo test --manifest-path .scratch/verify/<lNN>/Cargo.toml   # эталон л�
 Эталоны с решениями: `.scratch/verify/l01…l28` (их `target/` удалены, чтобы не занимать диск).
 Осталось из плана: 4 проекта и капстоун — они описаны, но не сделаны (это работа студента).
 ВАЖНО: `cargo test --workspace` теперь КРАСНЫЙ, пока студент не реализует лабы (todo! паникует).
-Это ожидаемо; проверять надо `cargo test -p <пакет>`. Для проверки самого курса использовать
-`.scratch/verify/*` или `cargo test -p lab01-toolkit -p lab02-ownership -p lab03-domain-model -p perceptron -p guess_game`.
+Это ожидаемо; проверять надо `cargo test -p <пакет>`. Сам курс проверяется эталонами в `.scratch/verify/lNN`.
 Ловушка: `clippy` в 1.99 требует `is_multiple_of` вместо `% n == 0` (линт `manual_is_multiple_of`) —
 это ломает лабы 3 и 4, если написать привычное `%`; в подсказках объяснено.
 `NOTES.md` — журнал студента, заполняет он. `HANDOFF.md` — история решений и статус.
