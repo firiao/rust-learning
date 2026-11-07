@@ -992,3 +992,29 @@ inference-pyo3). Тесты и лабы — после подтверждени�
 в `practice/lNN-…` с тестами и `todo!()`, затем эталон в `.scratch/verify/lNN` и прогон
 `cargo test` + `clippy --all-targets -- -D warnings` на эталоне.
 
+
+---
+
+## 26. Текущий статус (7 ноября 2026)
+
+- Контекст перенесён в проект: `HANDOFF.md`. Старая версия курса удалена (восстанавливается из git).
+- `README.md` переписан: устройство курса, карта, правила, как проходить лабу.
+- Лабы 1–18: `quiz.md` + `lab.md` + готовый крейт в `practice/lNN-…` + эталон в `.scratch/verify/lNN`.
+- Осталось: лабы 19–28 (cargo-deep, serde, clap, errors-in-practice, macros-unsafe, async,
+  ndarray, mlp-scratch, candle, inference-pyo3).
+
+### Как делать следующую лабу
+
+1. `quiz.md` — 6–8 вопросов с разборами.
+2. Крейт `practice/lNN-<slug>`: `lib.rs` с `todo!()` + тесты (5–8).
+3. Эталон `.scratch/verify/lNN`: тот же файл с реализацией; `cargo test` + `clippy --all-targets -- -D warnings`.
+4. Скелет обязан компилироваться: `cargo check -p lNN-<slug> --all-targets` → 0 ошибок.
+5. `lab.md`: «крейт уже создан», что реализовать, эксперимент, критерии, подсказки.
+6. Коммит.
+
+### Грабли, уже встреченные
+
+- `impl Trait` в возврате: `todo!()` не подходит (`!` не реализует `Fn`) → в заготовке `move |_x| todo!("…")`.
+- `clippy` требует `is_multiple_of`, но у `&i32` метода нет → `rem_euclid(2) == 0`.
+- Старые каталоги `.scratch/verify/lNN` содержали файлы прошлых версий — перед созданием эталона
+  каталог надо чистить целиком.
