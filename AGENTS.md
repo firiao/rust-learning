@@ -81,9 +81,10 @@ cargo test --manifest-path .scratch/verify/<lNN>/Cargo.toml   # эталон л�
 `course/` — **основной линейный курс, версия 2** (для нулевого входа в Rust):
 `README.md` (карта 28 лекций + правила + честная оценка «100–120 часов»), `GLOSSARY.md`,
 `FORWARD-REFERENCES.md`, `CHECKLIST.md`, папки `01-first-program` … `28-inference-pyo3` — по одному `lecture.md`.
-Тесты и лабы: готовы для лекций **1–6** (`quiz.md` + `lab.md`), крейты лаб **созданы заранее**
-в `practice/l01-hello` … `practice/l06-borrowing` (заготовка с `todo!()` + тесты).
-Эталоны с решениями: `.scratch/verify/l01…l06`. Для лекций 7–28 — в работе.
+Тесты и лабы: готовы **все 28** (`quiz.md` + `lab.md`), крейты лаб созданы заранее
+в `practice/l01-hello` … `practice/l28-inference` (заготовка с `todo!()` + тесты).
+Эталоны с решениями: `.scratch/verify/l01…l28` (их `target/` удалены, чтобы не занимать диск).
+Осталось из плана: 4 проекта и капстоун — они описаны, но не сделаны (это работа студента).
 ВАЖНО: `cargo test --workspace` теперь КРАСНЫЙ, пока студент не реализует лабы (todo! паникует).
 Это ожидаемо; проверять надо `cargo test -p <пакет>`. Для проверки самого курса использовать
 `.scratch/verify/*` или `cargo test -p lab01-toolkit -p lab02-ownership -p lab03-domain-model -p perceptron -p guess_game`.
