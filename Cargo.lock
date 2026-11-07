@@ -51,6 +51,18 @@ name = "l12-generics"
 version = "0.1.0"
 
 [[package]]
+name = "l13-collections"
+version = "0.1.0"
+
+[[package]]
+name = "l14-iterators"
+version = "0.1.0"
+
+[[package]]
+name = "l15-closures"
+version = "0.1.0"
+
+[[package]]
 name = "sandbox"
 version = "0.1.0"
 

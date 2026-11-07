@@ -1,0 +1,116 @@
+# Лаба 15. Замыкания
+
+**Время:** ~20 минут
+**Тема:** захват, `move`, `Fn`/`FnMut`, замыкание как параметр и результат
+
+## Цель
+
+Четыре функции, и две из них **возвращают** замыкание — там и спрятаны все тонкости.
+
+## Крейт уже создан
+
+Открывай `practice/l15-closures` — четыре `todo!()` и пять тестов.
+
+```bash
+cargo test -p l15-closures   # 5 красных
+```
+
+> Обрати внимание: в `make_adder` и `make_counter` вместо `todo!()` стоит
+> `move |_x| todo!("…")` и `move || todo!("…")`. Причина: функция возвращает `impl Fn…`,
+> а `!` (результат `todo!()`) этим трейтам не удовлетворяет. Заготовка — замыкание, которое паникует,
+> пока не реализуешь. Это само по себе полезно знать.
+
+## Реализуй
+
+**1. `apply_twice(f, x)`** — вызвать `f` дважды: `f(f(x))`.
+
+**2. `make_adder(n) -> impl Fn(i32) -> i32`** — замыкание, прибавляющее `n`. Нужен `move`:
+`n` — локальный параметр, замыкание живёт дольше функции.
+
+**3. `count_if(values, predicate) -> usize`** — предикат приходит параметром `<F: Fn(&i32) -> bool>`.
+
+**4. `make_counter() -> impl FnMut() -> i32`** — счётчик, который помнит состояние между вызовами.
+Первый вызов возвращает 1.
+
+## Эксперимент
+
+Убери `move` в `make_adder` и запусти `cargo test`.
+
+Запиши в `NOTES.md` текст ошибки (`E0373`?) и что советует компилятор.
+
+## Критерии приёмки
+
+- [ ] 5 тестов зелёные (включая `counter_is_independent`: два счётчика не делят состояние);
+- [ ] `clippy -D warnings` и `fmt --check` чистые после реализации;
+- [ ] в `NOTES.md` разобран эксперимент без `move`.
+
+## Подсказки
+
+<details>
+<summary>`apply_twice`</summary>
+
+```rust
+f(f(x))
+```
+
+`f` вызывается как обычная функция, хотя это замыкание.
+
+</details>
+
+<details>
+<summary>`make_adder`</summary>
+
+```rust
+move |x| x + n
+```
+
+`move` забирает `n` внутрь замыкания.
+
+</details>
+
+<details>
+<summary>`count_if`</summary>
+
+```rust
+values.iter().filter(|n| predicate(n)).count()
+```
+
+`filter` передаёт `&&i32`, а предикат ждёт `&i32`. Здесь работает авторазыменование при вызове.
+
+</details>
+
+<details>
+<summary>`make_counter`</summary>
+
+```rust
+let mut count = 0;
+move || {
+    count += 1;
+    count
+}
+```
+
+Замыкание меняет `count`, поэтому оно `FnMut`, а не `Fn`. `move` обязателен: без него замыкание
+ссылалось бы на локальную переменную, которая умрёт.
+
+Два независимых `make_counter()` — два независимых состояния: каждый вызов создаёт свой `count`.
+
+</details>
+
+<details>
+<summary>Эксперимент</summary>
+
+```text
+error[E0373]: closure may outlive the current function, but it borrows `n`,
+              which is owned by the current function
+help: to force the closure to take ownership ... use the `move` keyword
+```
+
+Замыкание возвращается наружу, значит живёт дольше `make_adder`. Ссылаться на её локальные данные
+нельзя — отдай владение через `move`.
+
+</details>
+
+---
+
+**Готово?** Дальше — [лекция 16: модули и тесты](../16-modules-tests/lecture.md).
