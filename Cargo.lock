@@ -43,6 +43,14 @@ name = "l10-errors"
 version = "0.1.0"
 
 [[package]]
+name = "l11-traits"
+version = "0.1.0"
+
+[[package]]
+name = "l12-generics"
+version = "0.1.0"
+
+[[package]]
 name = "sandbox"
 version = "0.1.0"
 
