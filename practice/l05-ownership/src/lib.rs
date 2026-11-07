@@ -1,17 +1,12 @@
-//! Move, Copy и clone.
+//! Move, Copy и clone. Только то, что было в лекциях 1–5 (без `Vec`).
 
 /// Забирает владение, дописывает '!' и возвращает обратно.
 pub fn append_bang(mut text: String) -> String {
     todo!()
 }
 
-/// Забирает вектор и возвращает сумму.
-pub fn total(values: Vec<i32>) -> i32 {
-    todo!()
-}
-
-/// Самое длинное слово (по числу символов). При равенстве — первое.
-pub fn longest_word_owned(text: &str) -> String {
+/// Дописывает два '!' — вызвать `push` дважды.
+pub fn append_twice(mut text: String) -> String {
     todo!()
 }
 
@@ -20,10 +15,14 @@ pub fn double(n: i32) -> i32 {
     todo!()
 }
 
+/// Самое длинное слово (по числу символов). При равенстве — первое.
+pub fn longest_word_owned(text: &str) -> String {
+    todo!()
+}
+
 // ===== ЭКСПЕРИМЕНТЫ =====
-// Раскомментируй ОДИН блок (убери `//` в начале строк),
-// выполни `cargo check -p l05-ownership`, прочитай ошибку,
-// закомментируй обратно.
+// Раскомментируй ОДИН блок, выполни `cargo check -p l05-ownership`,
+// прочитай ошибку, закомментируй обратно.
 
 // --- Блок 1: move при присваивании ---
 // pub fn experiment_1() {
@@ -72,15 +71,16 @@ mod tests {
     fn ownership_can_be_returned() {
         let mut text = String::from("a");
         text = append_bang(text);
-        text = append_bang(text);
-        assert_eq!(text, "a!!");
+        text = append_twice(text);
+        assert_eq!(text, "a!!!");
     }
 
     #[test]
-    fn sums_vector() {
-        assert_eq!(total(vec![1, 2, 3, 4]), 10);
-        assert_eq!(total(vec![]), 0);
-        assert_eq!(total(vec![-5, 5]), 0);
+    fn copy_types_stay_alive() {
+        let n = 21;
+        let doubled = double(n);
+        assert_eq!(doubled, 42);
+        assert_eq!(n, 21);
     }
 
     #[test]
@@ -89,13 +89,5 @@ mod tests {
         assert_eq!(longest_word_owned("привет мир"), "привет");
         assert_eq!(longest_word_owned(""), "");
         assert_eq!(longest_word_owned("  а   бб  "), "бб");
-    }
-
-    #[test]
-    fn copy_types_stay_alive() {
-        let n = 21;
-        let doubled = double(n);
-        assert_eq!(doubled, 42);
-        assert_eq!(n, 21); // n жив: i32 — Copy
     }
 }

@@ -1,22 +1,22 @@
-//! Функции и возврат значений.
+//! Функции и возврат значений. Только то, что было в лекциях 1–3.
 
-/// Классический FizzBuzz для одного числа.
-///
-/// Кратно 15 -> "FizzBuzz", кратно 3 -> "Fizz", кратно 5 -> "Buzz",
-/// иначе — само число строкой.
-pub fn fizzbuzz(n: u32) -> String {
+/// Сумма двух чисел.
+pub fn add(a: i32, b: i32) -> i32 {
     todo!()
 }
 
-/// Сколько шагов гипотезы Коллатца нужно, чтобы дойти до 1.
-///
-/// Чётное: n / 2, нечётное: 3n + 1. Для n = 1 — ноль шагов.
-pub fn collatz_steps(start: u64) -> u32 {
+/// Квадрат числа.
+pub fn square(x: i32) -> i32 {
     todo!()
 }
 
-/// Число Фибоначчи, итеративно. fib(0) = 0, fib(1) = 1.
-pub fn fib(n: u32) -> u64 {
+/// Объём прямоугольного параллелепипеда.
+pub fn volume(width: f64, height: f64, depth: f64) -> f64 {
+    todo!()
+}
+
+/// Среднее трёх чисел.
+pub fn average3(a: f64, b: f64, c: f64) -> f64 {
     todo!()
 }
 
@@ -32,29 +32,28 @@ mod tests {
     use super::*;
 
     #[test]
-    fn fizzbuzz_cases() {
-        assert_eq!(fizzbuzz(1), "1");
-        assert_eq!(fizzbuzz(3), "Fizz");
-        assert_eq!(fizzbuzz(5), "Buzz");
-        assert_eq!(fizzbuzz(15), "FizzBuzz");
-        assert_eq!(fizzbuzz(98), "98");
+    fn adds() {
+        assert_eq!(add(2, 3), 5);
+        assert_eq!(add(-2, 2), 0);
     }
 
     #[test]
-    fn collatz_known_values() {
-        assert_eq!(collatz_steps(1), 0);
-        assert_eq!(collatz_steps(2), 1);
-        assert_eq!(collatz_steps(6), 8);
-        assert_eq!(collatz_steps(27), 111);
+    fn squares() {
+        assert_eq!(square(4), 16);
+        assert_eq!(square(0), 0);
+        assert_eq!(square(-3), 9);
     }
 
     #[test]
-    fn fibonacci() {
-        assert_eq!(fib(0), 0);
-        assert_eq!(fib(1), 1);
-        assert_eq!(fib(10), 55);
-        assert_eq!(fib(30), 832_040);
-        assert_eq!(fib(50), 12_586_269_025);
+    fn computes_volume() {
+        assert_eq!(volume(2.0, 3.0, 4.0), 24.0);
+        assert_eq!(volume(1.0, 1.0, 1.0), 1.0);
+    }
+
+    #[test]
+    fn averages() {
+        assert_eq!(average3(1.0, 2.0, 3.0), 2.0);
+        assert_eq!(average3(10.0, 10.0, 10.0), 10.0);
     }
 
     #[test]

@@ -43,8 +43,8 @@ pub fn total_area(shapes: &[&dyn Shape]) -> f64 {
     todo!()
 }
 
-/// Описания всех фигур.
-pub fn describe_all(shapes: &[&dyn Shape]) -> Vec<String> {
+/// Описания всех фигур, по одному на строку.
+pub fn describe_all(shapes: &[&dyn Shape]) -> String {
     todo!()
 }
 
@@ -72,7 +72,7 @@ mod tests {
     #[test]
     fn sums_heterogeneous_list() {
         let (c, s) = sample();
-        let shapes: Vec<&dyn Shape> = vec![&c, &s];
+        let shapes: [&dyn Shape; 2] = [&c, &s];
         let total = total_area(&shapes);
         assert!((total - (std::f64::consts::PI + 4.0)).abs() < 1e-9);
         assert_eq!(total_area(&[]), 0.0);
@@ -81,10 +81,11 @@ mod tests {
     #[test]
     fn describes_heterogeneous_list() {
         let (c, s) = sample();
-        let shapes: Vec<&dyn Shape> = vec![&c, &s];
-        let descriptions = describe_all(&shapes);
-        assert_eq!(descriptions.len(), 2);
-        assert!(descriptions[0].starts_with("круг"));
-        assert!(descriptions[1].starts_with("квадрат"));
+        let shapes: [&dyn Shape; 2] = [&c, &s];
+        let text = describe_all(&shapes);
+        let lines: Vec<&str> = text.lines().collect();
+        assert_eq!(lines.len(), 2);
+        assert!(lines[0].starts_with("круг"));
+        assert!(lines[1].starts_with("квадрат"));
     }
 }

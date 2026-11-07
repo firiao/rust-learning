@@ -1,3 +1,5 @@
+#![allow(clippy::manual_is_multiple_of)]
+// `is_multiple_of` появится в лекции 13; пока используем `%`.
 //! Перечисления и `Option`.
 
 #[derive(Debug, Clone, Copy, PartialEq)]

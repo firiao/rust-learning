@@ -1,3 +1,5 @@
+#![allow(clippy::manual_is_multiple_of)]
+// `is_multiple_of` не объяснялся; используем `%`.
 //! Коллекции: `Vec`, `HashMap`, разбор CSV.
 
 use std::collections::HashMap;

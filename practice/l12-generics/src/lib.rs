@@ -46,7 +46,8 @@ mod tests {
         assert_eq!(largest(&[3, 7, 2]), Some(7));
         assert_eq!(largest(&[1.5, 0.5]), Some(1.5));
         assert_eq!(largest(&['я', 'б']), Some('я'));
-        assert_eq!(largest::<i32>(&[]), None);
+        let empty: [i32; 0] = [];
+        assert_eq!(largest(&empty), None);
     }
 
     #[test]

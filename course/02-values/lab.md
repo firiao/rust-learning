@@ -1,34 +1,38 @@
 # Лаба 2. Текст и числа
 
 **Время:** ~15 минут
-**Тема:** `String` vs `&str`, байты и символы, `char`
+**Тема:** `String` vs `&str`, байты и символы, числа
+
+> **Языковой бюджет:** только то, что объяснено в лекциях 1–2. Полная таблица — [BUDGET.md](../BUDGET.md).
+> Здесь **нет** `if`, циклов, `Vec` и `Option` — они будут позже, и лаба их не требует.
 
 ## Цель
 
-Четыре функции обработки текста. Все тесты — на кириллице, чтобы сразу было видно, кто считает байты, а кто символы.
+Четыре функции на строках и числах. Все тесты — на кириллице, чтобы сразу было видно,
+кто считает байты, а кто символы.
 
 ## Крейт уже создан
 
-Открывай `practice/l02-text` — копировать ничего не нужно:
-
-- `src/lib.rs` — заготовка: сигнатуры функций с `todo!()` и тесты;
-- `Cargo.toml` — пакет `l02-text`.
-
-`todo!()` — макрос-заглушка: компилируется, но паникует при вызове. Поэтому сейчас тесты **красные**. Это не поломка, а задача: пока `todo!()` на месте, тест падает с `not yet implemented`.
+Открывай `practice/l02-text` — четыре `todo!()` и пять тестов.
 
 ```bash
-cargo test -p l02-text        # сейчас: failures
+cargo test -p l02-text       # 5 красных
 ```
 
-**Почему компилятор предупреждает `unused variable`.** Параметры функций пока не используются — тело заменено на `todo!()`. Это нормально: предупреждения исчезнут сами, как только реализуешь. `cargo test` они не мешают, а `clippy -D warnings` станет чистым **после** реализации.
+**Почему компилятор предупреждает `unused variable`** — параметры не используются из-за `todo!()`.
+Исчезнут, как только реализуешь.
 
 ## Реализуй
 
-Все четыре функции — в `src/lib.rs`. Начни с `char_count`: она самая короткая и сразу показывает разницу между байтами и символами.
+**1. `char_count(text) -> usize`** — количество **символов**. В лекции 2 для этого был показан
+`chars().count()`.
 
-```bash
-cargo test -p l02-text
-```
+**2. `shout(text) -> String`** — верхний регистр и `!` на конце: `format!("{}!", ...)`.
+
+**3. `is_longer_than(text, limit) -> bool`** — длиннее ли текст, чем `limit` символов.
+Можно переиспользовать `char_count`.
+
+**4. `percent(part, total) -> f64`** — сколько процентов `part` от `total`. Только арифметика.
 
 ## Эксперимент
 
@@ -38,20 +42,19 @@ cargo test -p l02-text
 // #[test]
 // fn experiment() {
 //     let text = "привет";
-//     let s = &text[0..3];
-//     println!("{s}");
+//     println!("len = {}, chars = {}", text.len(), char_count(text));
 // }
 ```
 
-Раскомментируй и запусти. Что произошло и почему? Запиши вывод в `NOTES.md`.
+Раскомментируй, запусти `cargo test -p l02-text -- --nocapture` и посмотри на два числа.
+Запиши в `NOTES.md`, почему они разные.
 
 ## Критерии приёмки
 
 - [ ] 5 тестов зелёные;
-- [ ] `clippy` и `fmt --check` чистые;
-- [ ] `initials("")` возвращает пустую строку, а не `"."`;
-- [ ] в `NOTES.md` объяснено, почему `char_count("привет") != "привет".len()`;
-- [ ] в `NOTES.md` записан результат эксперимента со срезом `&text[0..3]`.
+- [ ] `clippy -D warnings` и `fmt --check` чистые после реализации;
+- [ ] `is_longer_than` не сравнивает байты: `"ёж"` (2 символа, 4 байта) при `limit = 1` — `true`;
+- [ ] в `NOTES.md` записано, почему `len()` и `char_count` дают разные числа.
 
 ## Подсказки
 
@@ -62,46 +65,9 @@ cargo test -p l02-text
 text.chars().count()
 ```
 
-Один вызов, цикл не нужен. `chars()` — итератор по символам, `count()` — количество.
+`chars()` — символы по одному, `count()` — сколько их. Именно это соответствует `len()` в Python.
 
-</details>
-
-<details>
-<summary>`initials` — как не получить лишнюю точку</summary>
-
-```rust
-let mut parts: Vec<String> = Vec::new();
-for word in full_name.split_whitespace() {
-    if let Some(first) = word.chars().next() {
-        parts.push(first.to_uppercase().to_string());
-    }
-}
-
-if parts.is_empty() {
-    String::new()
-} else {
-    format!("{}.", parts.join(". "))
-}
-```
-
-`split_whitespace()` уже схлопывает пробелы, поэтому `"  мария   ивановна "` даст два слова. `to_uppercase()` у `char` возвращает итератор (не `char`), поэтому `.to_string()`.
-
-</details>
-
-<details>
-<summary>`mask_digits`</summary>
-
-```rust
-let mut out = String::with_capacity(text.len());
-for ch in text.chars() {
-    if ch.is_ascii_digit() {
-        out.push('*');
-    } else {
-        out.push(ch);
-    }
-}
-out
-```
+Оба метода уже встречались в лекции 2 в разделе «Байты и символы — не одно и то же».
 
 </details>
 
@@ -117,16 +83,24 @@ format!("{}!", text.to_uppercase())
 </details>
 
 <details>
-<summary>Эксперимент: что будет с `&text[0..3]`</summary>
+<summary>`is_longer_than`</summary>
 
-Паника:
-
-```text
-thread 'main' panicked at: end byte index 3 is not a char boundary;
-it is inside 'р' (bytes 2..4 of string)
+```rust
+char_count(text) > limit
 ```
 
-Индекс 3 попадает внутрь буквы «р» (она занимает байты 2 и 3). Срез по байтам, который режет символ пополам, недопустим.
+Сравнение даёт `bool` — это и есть возвращаемое значение.
+
+</details>
+
+<details>
+<summary>`percent`</summary>
+
+```rust
+part / total * 100.0
+```
+
+Все числа дробные (`f64`), поэтому деление обычное, а не целочисленное.
 
 </details>
 

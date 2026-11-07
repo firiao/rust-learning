@@ -3,53 +3,55 @@
 **Время:** ~20 минут
 **Тема:** move, `Copy`, `clone`, передача владения в функцию
 
+> **Языковой бюджет:** лекции 1–5. `Vec` и ссылки `&`/`&mut` будут в лекциях 6 и 13 —
+> здесь их нет, работаем с `String` по значению.
+
 ## Цель
 
 Прочувствовать move руками: не прочитать про него, а увидеть, как компилятор отбирает переменную.
 
 ## Крейт уже создан
 
-Открывай `practice/l05-ownership` — копировать ничего не нужно:
-
-- `src/lib.rs` — заготовка: сигнатуры функций с `todo!()` и тесты;
-- `Cargo.toml` — пакет `l05-ownership`.
-
-`todo!()` — макрос-заглушка: компилируется, но паникует при вызове. Поэтому сейчас тесты **красные**. Это не поломка, а задача: пока `todo!()` на месте, тест падает с `not yet implemented`.
+Открывай `practice/l05-ownership` — четыре `todo!()` и четыре теста плюс блок экспериментов.
 
 ```bash
-cargo test -p l05-ownership        # сейчас: failures
+cargo test -p l05-ownership   # 4 красных
 ```
-
-**Почему компилятор предупреждает `unused variable`.** Параметры функций пока не используются — тело заменено на `todo!()`. Это нормально: предупреждения исчезнут сами, как только реализуешь. `cargo test` они не мешают, а `clippy -D warnings` станет чистым **после** реализации.
 
 ## Реализуй
 
-Все четыре функции — с `todo!()` в `src/lib.rs`. Обрати внимание: `append_bang` принимает `String` (забирает владение) и возвращает `String` (отдаёт обратно).
+**1. `append_bang(text: String) -> String`** — дописать `!` и вернуть владение.
+Параметр уже `mut`, потому что внутри будешь менять.
 
-```bash
-cargo test -p l05-ownership
-```
+**2. `append_twice(text: String) -> String`** — дописать **два** `!`.
+
+**3. `double(n: i32) -> i32`** — `i32` это `Copy`, поэтому вызывающий переменную не теряет.
+
+**4. `longest_word_owned(text: &str) -> String`** — самое длинное слово. Здесь уже можно
+`for` и `if` (лекция 4). Возвращать надо `String` — новую строку, а не срез (срезы будут
+в следующей лекции).
 
 ## Эксперименты
 
-Главная часть лабы. По одному блоку: раскомментировал → `cargo check` → прочитал → закомментировал.
+Главная часть. По одному блоку: раскомментировал → `cargo check -p l05-ownership` → прочитал →
+закомментировал.
 
-1. **Блок 1** — move при присваивании: какой код ошибки?
-2. **Блок 2** — move при передаче в функцию: чем сообщение отличается от блока 1?
-3. **Блок 3** — `Copy`: ошибки **нет**. Объясни, почему.
-4. **Блок 4** — `clone`: ошибки нет. Какая цена?
+1. **Блок 1** — move при присваивании;
+2. **Блок 2** — move при передаче в функцию;
+3. **Блок 3** — `Copy`: ошибки нет;
+4. **Блок 4** — `clone`: ошибки нет.
 
 ## Критерии приёмки
 
-- [ ] 5 тестов зелёные;
-- [ ] `clippy` и `fmt --check` чистые;
+- [ ] 4 теста зелёные;
+- [ ] `clippy -D warnings` и `fmt --check` чистые после реализации;
 - [ ] в `NOTES.md` разобраны все 4 эксперимента;
-- [ ] можешь объяснить, почему `text = append_bang(text)` внутри теста работает.
+- [ ] можешь объяснить, почему `text = append_bang(text)` работает.
 
 ## Подсказки
 
 <details>
-<summary>Реализации</summary>
+<summary>`append_bang` и `append_twice`</summary>
 
 ```rust
 pub fn append_bang(mut text: String) -> String {
@@ -57,70 +59,54 @@ pub fn append_bang(mut text: String) -> String {
     text
 }
 
-pub fn total(values: Vec<i32>) -> i32 {
-    values.iter().sum()
+pub fn append_twice(mut text: String) -> String {
+    text.push('!');
+    text.push('!');
+    text
 }
+```
 
-pub fn longest_word_owned(text: &str) -> String {
-    let mut best = String::new();
-    let mut best_len = 0;
-    for word in text.split_whitespace() {
-        let len = word.chars().count();
-        if len > best_len {
-            best_len = len;
-            best = word.to_string();
-        }
+`text.push('!')` — метод добавляет один символ. Он уже был в лекции 5.
+
+</details>
+
+<details>
+<summary>`longest_word_owned`</summary>
+
+```rust
+let mut best = String::from("");
+let mut best_len = 0;
+for word in text.split_whitespace() {
+    let len = word.chars().count();
+    if len > best_len {
+        best_len = len;
+        best = String::from(word);
     }
-    best
 }
-
-pub fn double(n: i32) -> i32 {
-    n * 2
-}
+best
 ```
 
-`longest_word_owned` принимает `&str` (не забирает владение), но возвращает `String` — потому что вернуть ссылку на своё временное значение нельзя.
+`split_whitespace()` и `chars().count()` встречались в лекциях 2 и 5; `for` и `if` — в лекции 4.
+`String::from(word)` превращает `&str` в собственную строку.
 
 </details>
 
 <details>
-<summary>Эксперимент 1: move при присваивании</summary>
+<summary>Эксперименты 1 и 2</summary>
 
-```text
-error[E0382]: borrow of moved value: `s1`
-  |         - move occurs because `s1` has type `String`,
-  |           which does not implement the `Copy` trait
-  |     let s2 = s1;
-  |             - value moved here
-  |     println!("{s1}");
-  |               ^ value borrowed here after move
-help: consider cloning the value ...
-```
+**1:** `error[E0382]: borrow of moved value: 's1'` — `let s2 = s1;` переместил владение.
+
+**2:** та же `E0382`, но помечено `value moved here` на вызове `take(s);`.
+Передача в функцию — тоже перемещение.
 
 </details>
 
 <details>
-<summary>Эксперимент 2: move в функцию</summary>
+<summary>Эксперименты 3 и 4</summary>
 
-Та же ошибка `E0382`, но место перемещения — **вызов функции**: `value moved here` указывает на `take(s);`.
+**3:** ошибки нет — `i32` реализует `Copy`, `let b = a` копирует число.
 
-Вывод: передача в функцию — такое же перемещение, как присваивание.
-
-</details>
-
-<details>
-<summary>Эксперимент 3: Copy</summary>
-
-Ошибки нет, потому что `i32: Copy`. `let b = a` копирует 4 байта, обе переменные независимы.
-
-То же с `f64`, `bool`, `char`, кортежами из них.
-
-</details>
-
-<details>
-<summary>Эксперимент 4: clone</summary>
-
-Ошибки нет: `clone()` создаёт **второй** `String` со своей копией байтов в куче. Цена — выделение памяти и копирование.
+**4:** ошибки нет — `clone()` создаёт вторую `String` с собственной копией байтов в куче.
 
 </details>
 

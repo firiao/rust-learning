@@ -3,6 +3,8 @@
 **Время:** ~20 минут
 **Тема:** `enum` с данными, `match` по вариантам, `Option`, `if let`
 
+> **Языковой бюджет:** только то, что объяснено в лекциях 1–9. Полная таблица — [BUDGET.md](../BUDGET.md).
+
 ## Цель
 
 Свой `enum` с разнородными вариантами и четыре функции, которые возвращают `Option` вместо паники.
@@ -79,28 +81,31 @@ pub fn has_area(&self) -> bool {
 <summary>`longest_word`</summary>
 
 ```rust
-let mut best: Option<&str> = None;
+let mut best = "";
+let mut best_len = 0;
 for word in text.split_whitespace() {
-    if best.is_none_or(|b| word.chars().count() > b.chars().count()) {
-        best = Some(word);
+    let len = word.chars().count();
+    if len > best_len {
+        best_len = len;
+        best = word;
     }
 }
-best
+if best_len == 0 {
+    None
+} else {
+    Some(best)
+}
 ```
 
-`is_none_or` — «лучшего ещё нет **или** новый длиннее». Если твой компилятор её не знает, замени на
-`best.map_or(true, |b| ...)`.
+Так проще всего: обычный цикл (лекция 4) и `Option` в конце (эта лекция).
 
 </details>
 
 <details>
 <summary>Про чётность и `clippy`</summary>
 
-Привычное `*v % 2 == 0` работает, но `clippy` предложит `is_multiple_of`. Беда в том, что у `&i32`
-метод `is_multiple_of` не находится (он для беззнаковых), а разыменовывать в цикле неудобно.
-
-Поэтому в эталоне используется `v.rem_euclid(2) == 0` — «остаток по модулю, всегда неотрицательный».
-Для отрицательных чисел это ещё и корректнее, чем `%`.
+`*v % 2 == 0` — остаток от деления. `clippy` предложит `is_multiple_of`, но этот метод появится
+в курсе позже, поэтому в заготовке стоит `#![allow(clippy::manual_is_multiple_of)]` с пояснением.
 
 </details>
 

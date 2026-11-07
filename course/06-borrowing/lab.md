@@ -1,141 +1,112 @@
 # Лаба 6. Заимствование
 
 **Время:** ~20 минут
-**Тема:** `&str`, `&mut`, срезы, правила заимствования
+**Тема:** `&`, `&mut`, `*`, срезы, правила заимствования
+
+> **Языковой бюджет:** лекции 1–6. Без `Vec`, без итераторов (`iter`, `map`, `filter`) —
+> только циклы и индексы.
 
 ## Цель
 
-Написать функции, которые **не забирают** данные: только смотрят или меняют на месте.
+Функции, которые **не забирают** данные: только смотрят, меняют на месте или возвращают срез.
 
 ## Крейт уже создан
 
-Открывай `practice/l06-borrowing` — копировать ничего не нужно:
-
-- `src/lib.rs` — заготовка: сигнатуры функций с `todo!()` и тесты;
-- `Cargo.toml` — пакет `l06-borrowing`.
-
-`todo!()` — макрос-заглушка: компилируется, но паникует при вызове. Поэтому сейчас тесты **красные**. Это не поломка, а задача: пока `todo!()` на месте, тест падает с `not yet implemented`.
+Открывай `practice/l06-borrowing` — четыре `todo!()`, пять тестов и три эксперимента.
 
 ```bash
-cargo test -p l06-borrowing        # сейчас: failures
+cargo test -p l06-borrowing   # 5 красных
 ```
-
-**Почему компилятор предупреждает `unused variable`.** Параметры функций пока не используются — тело заменено на `todo!()`. Это нормально: предупреждения исчезнут сами, как только реализуешь. `cargo test` они не мешают, а `clippy -D warnings` станет чистым **после** реализации.
 
 ## Реализуй
 
-Пять функций с `todo!()` в `src/lib.rs`.
+**1. `first_word(text: &str) -> &str`** — вернуть **срез** входной строки. Подсказка:
+`char_indices()` из лекции 6 даёт пары `(байтовый индекс, символ)`.
 
-```bash
-cargo test -p l06-borrowing
-```
+**2. `push_bang(text: &mut String)`** — дописать `!`, не забирая владение.
 
-Подсказка по `first_word`: нужен **байтовый** индекс пробела, чтобы взять `&text[..i]`. Его даёт `char_indices()`.
+**3. `sum_slice(values: &[i32]) -> i32`** — сумма среза. `for v in values` даёт `&i32`,
+поэтому нужен `*v` (разыменование из лекции 6).
+
+**4. `count_vowels(text: &str) -> usize`** — гласные. Работаем циклом по `chars()` и сравнениями
+через `||`; `match` будет только в лекции 8.
 
 ## Эксперименты
 
-Три блока, по одному. Для каждого запиши в `NOTES.md`:
+По одному блоку: раскомментировал → `cargo check -p l06-borrowing` → прочитал → вернул.
 
-- код ошибки;
-- какие два заимствования встретились (для блока 1 и 2);
-- как починить.
+1. `&` и `&mut` одновременно;
+2. два `&mut`;
+3. `&mut` у переменной без `mut`.
 
 ## Критерии приёмки
 
-- [ ] 6 тестов зелёные;
-- [ ] `clippy` и `fmt --check` чистые;
-- [ ] `first_word` возвращает `&str` — нигде нет `.to_string()` или `String::from`;
+- [ ] 5 тестов зелёные;
+- [ ] `first_word` возвращает `&str` — нигде нет `String::from` и `to_string`;
+- [ ] `clippy -D warnings` и `fmt --check` чистые после реализации;
 - [ ] в `NOTES.md` разобраны три эксперимента.
 
 ## Подсказки
 
 <details>
-<summary>Реализации</summary>
+<summary>`first_word`</summary>
 
 ```rust
-pub fn first_word(text: &str) -> &str {
-    for (i, ch) in text.char_indices() {
-        if ch == ' ' {
-            return &text[..i];
-        }
+for (i, ch) in text.char_indices() {
+    if ch == ' ' {
+        return &text[..i];
     }
-    text
 }
-
-pub fn count_vowels(text: &str) -> usize {
-    const VOWELS: &str = "аеёиоуыэюяАЕЁИОУЫЭЮЯaeiouyAEIOUY";
-    text.chars().filter(|c| VOWELS.contains(*c)).count()
-}
-
-pub fn push_bang(text: &mut String) {
-    text.push('!');
-}
-
-pub fn sum_slice(values: &[i32]) -> i32 {
-    values.iter().sum()
-}
-
-pub fn swap(a: &mut i32, b: &mut i32) {
-    std::mem::swap(a, b);
-}
+text
 ```
 
-`char_indices()` важен потому, что `&text[..i]` режет **байты**. `chars().enumerate()` дал бы индексы в символах — на кириллице это ошибка или паника.
+`char_indices()` важен потому, что `&text[..i]` режет **байты**. Для кириллицы индекс в символах
+дал бы неверный срез.
 
 </details>
 
 <details>
-<summary>`swap` без `std::mem::swap`</summary>
+<summary>`sum_slice`</summary>
 
 ```rust
-pub fn swap(a: &mut i32, b: &mut i32) {
-    let tmp = *a;
-    *a = *b;
-    *b = tmp;
+let mut total = 0;
+for v in values {
+    total += *v;
 }
+total
 ```
 
-`*a = *b` — «запиши по адресу, на который смотрит `a`».
+`values` — срез, элементы идут по ссылке. `*v` — разыменование: «достать значение по ссылке».
 
 </details>
 
 <details>
-<summary>Эксперимент 1</summary>
+<summary>`count_vowels`</summary>
 
-```text
-error[E0502]: cannot borrow `v` as mutable because it is also borrowed as immutable
-  |
-  |     let first = &v[0];
-  |                  -- immutable borrow occurs here
-  |     v.push(4);
-  |       ^^^^^^ mutable borrow occurs here
-  |     println!("{first}");
-  |                - immutable borrow later used here
+```rust
+let mut count = 0;
+for ch in text.chars() {
+    if ch == 'а' || ch == 'е' || ch == 'ё' || ch == 'и' || ch == 'о' || ch == 'у'
+        || ch == 'ы' || ch == 'э' || ch == 'ю' || ch == 'я'
+        || ch == 'a' || ch == 'e' || ch == 'i' || ch == 'o' || ch == 'u' || ch == 'y'
+    {
+        count += 1;
+    }
+}
+count
 ```
-
-Починка: напечатать `first` до `push` или скопировать значение (`let first = v[0];`).
 
 </details>
 
 <details>
-<summary>Эксперимент 2</summary>
+<summary>Эксперименты</summary>
 
-```text
-error[E0499]: cannot borrow `s` as mutable more than once at a time
-```
+**1:** `error[E0502]: cannot borrow 's' as mutable because it is also borrowed as immutable`.
 
-Два `&mut` одновременно запрещены.
+**2:** `error[E0499]: cannot borrow 's' as mutable more than once at a time`.
 
-</details>
-
-<details>
-<summary>Эксперимент 3</summary>
-
-```text
-error[E0596]: cannot borrow `s` as mutable, as it is not declared as mutable
-```
-
-`&mut` не делает переменную изменяемой — нужен `let mut s`.
+**3:** `error[E0596]: cannot borrow 's' as mutable, as it is not declared as mutable`
++ `help: consider changing this to be mutable` → нужно `let mut s`.
 
 </details>
 
