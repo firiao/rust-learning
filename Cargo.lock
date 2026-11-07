@@ -67,6 +67,14 @@ name = "l16-modules"
 version = "0.1.0"
 
 [[package]]
+name = "l17-smart-pointers"
+version = "0.1.0"
+
+[[package]]
+name = "l18-threads"
+version = "0.1.0"
+
+[[package]]
 name = "sandbox"
 version = "0.1.0"
 
