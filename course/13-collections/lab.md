@@ -33,14 +33,14 @@ cargo test -p l13-collections   # 6 красных
 
 ## Эксперимент
 
-Закомментируй в `top_words` вторую часть сортировки:
+В `top_words` убери вторую половину условия сравнения:
 
 ```rust
-pairs.sort_by(|a, b| b.1.cmp(&a.1));   // без then_with
+let better = right.1 > left.1;
 ```
 
-Запусти тест `ties_are_alphabetical` несколько раз. Он будет падать через раз — почему? Запиши
-в `NOTES.md`.
+Запусти тест `ties_are_alphabetical` несколько раз. Он начнёт падать через раз — почему?
+Запиши в `NOTES.md`.
 
 ## Дополнительное задание — проектируешь сам
 
@@ -66,16 +66,23 @@ pairs.sort_by(|a, b| b.1.cmp(&a.1));   // без then_with
 
 ```rust
 let mut freq = HashMap::new();
-for word in text.split(|c: char| !c.is_alphabetic()) {
-    if word.is_empty() {
-        continue;
+let mut current = String::new();
+for ch in text.chars() {
+    if ch.is_alphabetic() {
+        current.push(ch);
+    } else if !current.is_empty() {
+        *freq.entry(current.to_lowercase()).or_insert(0) += 1;
+        current.clear();
     }
-    *freq.entry(word.to_lowercase()).or_insert(0) += 1;
+}
+if !current.is_empty() {
+    *freq.entry(current.to_lowercase()).or_insert(0) += 1;
 }
 freq
 ```
 
-`split` с замыканием-предикатом: разделитель — любой символ, для которого условие истинно.
+Собираем слово по буквам в `current`, а на любом не-буквенном символе сбрасываем его в словарь.
+`to_lowercase()` у `String` возвращает новую строку в нижнем регистре.
 
 </details>
 
@@ -83,13 +90,37 @@ freq
 <summary>`top_words`</summary>
 
 ```rust
-let mut pairs: Vec<(String, usize)> = freq.iter().map(|(w, c)| (w.clone(), *c)).collect();
-pairs.sort_by(|a, b| b.1.cmp(&a.1).then_with(|| a.0.cmp(&b.0)));
-pairs.truncate(n);
-pairs
+let mut all: Vec<(String, usize)> = Vec::new();
+for (word, count) in freq {
+    all.push((word.clone(), *count));
+}
+
+for i in 1..all.len() {
+    let mut j = i;
+    while j > 0 {
+        let left = &all[j - 1];
+        let right = &all[j];
+        let better = right.1 > left.1 || (right.1 == left.1 && right.0 < left.0);
+        if better {
+            all.swap(j - 1, j);
+            j -= 1;
+        } else {
+            break;
+        }
+    }
+}
+
+let mut top = Vec::new();
+for pair in &all {
+    if top.len() == n {
+        break;
+    }
+    top.push(pair.clone());
+}
+top
 ```
 
-`b.1.cmp(&a.1)` — по частоте по убыванию. `then_with` — второй критерий при равенстве.
+`for (word, count) in freq` по `HashMap` даёт пары `(&String, &usize)` — поэтому `clone()` и `*count`.
 
 </details>
 
@@ -101,16 +132,22 @@ if values.is_empty() {
     return None;
 }
 let mut sorted = values.to_vec();
-sorted.sort_by(|a, b| a.total_cmp(b));
+for i in 1..sorted.len() {
+    let mut j = i;
+    while j > 0 && sorted[j - 1] > sorted[j] {
+        sorted.swap(j - 1, j);
+        j -= 1;
+    }
+}
 let mid = sorted.len() / 2;
-if sorted.len().is_multiple_of(2) {
+if sorted.len() % 2 == 0 {
     Some((sorted[mid - 1] + sorted[mid]) / 2.0)
 } else {
     Some(sorted[mid])
 }
 ```
 
-`total_cmp` — полное сравнение `f64`, корректно обрабатывает `NaN`.
+`values.to_vec()` — копия среза в `Vec` (срез нельзя менять).
 
 </details>
 
@@ -119,28 +156,37 @@ if sorted.len().is_multiple_of(2) {
 
 ```rust
 pub fn parse_line(line: &str) -> Vec<f64> {
-    line.split(',')
-        .filter_map(|part| part.trim().parse().ok())
-        .collect()
+    let mut numbers = Vec::new();
+    for part in line.split(',') {
+        if let Ok(value) = part.trim().parse::<f64>() {
+            numbers.push(value);
+        }
+    }
+    numbers
 }
 
 pub fn parse_csv(text: &str) -> Vec<Vec<f64>> {
-    text.lines()
-        .filter(|line| !line.trim().is_empty())
-        .map(parse_line)
-        .collect()
+    let mut table = Vec::new();
+    for line in text.lines() {
+        if line.trim().is_empty() {
+            continue;
+        }
+        table.push(parse_line(line));
+    }
+    table
 }
 ```
 
 </details>
 
 <details>
-<summary>Почему без `then_with` тест «мигает»</summary>
+<summary>Почему без второго критерия тест «мигает»</summary>
 
-Если критерий один, а значения равны, `sort_by` не обязан сохранять исходный порядок (`sort` —
-нестабильная сортировка). Исходный порядок берётся из `HashMap`, а он у каждого запуска разный.
+Порядок обхода `HashMap` не определён и меняется между запусками. Если два слова встречаются
+одинаково часто, а критерий только «по частоте», результат зависит от того, в каком порядке
+они лежали в таблице.
 
-Отсюда правило: **если результат должен быть воспроизводимым — задай полный порядок**, даже когда
+Правило: **если результат должен быть воспроизводимым — задай полный порядок**, даже когда
 кажется, что «второй критерий не важен».
 
 </details>

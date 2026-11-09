@@ -10,6 +10,8 @@ pub enum ParseError {
     NotANumber(String),
     /// Число вне допустимого диапазона.
     OutOfRange { value: i64, min: i64, max: i64 },
+    /// Делить на ноль нельзя.
+    DivisionByZero,
 }
 
 impl fmt::Display for ParseError {
@@ -20,20 +22,30 @@ impl fmt::Display for ParseError {
 
 impl std::error::Error for ParseError {}
 
+/// Разбирает целое число (с пробелами по краям).
+///
+/// Пусто -> `Empty`, не число -> `NotANumber`.
+pub fn parse_number(text: &str) -> Result<i64, ParseError> {
+    todo!()
+}
+
 /// Возраст: целое от 0 до 150 включительно.
+///
+/// Должен использовать `parse_number` и `?`, а не повторять разбор.
 pub fn parse_age(text: &str) -> Result<u8, ParseError> {
     todo!()
 }
 
-/// Сумма чисел, разделённых запятыми. Пустые куски игнорируются.
-///
-/// `"1, 2, 3"` -> Ok(6); `""` и `", ,"` -> Err(Empty).
-pub fn sum_csv(text: &str) -> Result<i64, ParseError> {
+/// Деление. На ноль -> `DivisionByZero`.
+pub fn divide(a: i64, b: i64) -> Result<f64, ParseError> {
     todo!()
 }
 
-/// Среднее по тем же числам. Используй `?` и `sum_csv`.
-pub fn average_csv(text: &str) -> Result<f64, ParseError> {
+/// Средний возраст двух людей.
+///
+/// Оба аргумента разбираются как возраст; если хоть один плохой — вернуть его ошибку.
+/// Внутри — два `?` и никакого `match`.
+pub fn average_age(first: &str, second: &str) -> Result<f64, ParseError> {
     todo!()
 }
 
@@ -42,28 +54,20 @@ mod tests {
     use super::*;
 
     #[test]
-    fn parses_valid_age() {
-        assert_eq!(parse_age("42"), Ok(42));
-        assert_eq!(parse_age("  7 "), Ok(7));
-        assert_eq!(parse_age("150"), Ok(150));
-    }
-
-    #[test]
-    fn rejects_empty() {
-        assert_eq!(parse_age(""), Err(ParseError::Empty));
-        assert_eq!(parse_age("   "), Err(ParseError::Empty));
-    }
-
-    #[test]
-    fn rejects_garbage() {
+    fn parses_numbers() {
+        assert_eq!(parse_number("42"), Ok(42));
+        assert_eq!(parse_number("  -7 "), Ok(-7));
+        assert_eq!(parse_number(""), Err(ParseError::Empty));
         assert_eq!(
-            parse_age("сорок два"),
+            parse_number("сорок два"),
             Err(ParseError::NotANumber("сорок два".to_string()))
         );
     }
 
     #[test]
-    fn rejects_out_of_range() {
+    fn parses_ages() {
+        assert_eq!(parse_age("42"), Ok(42));
+        assert_eq!(parse_age("150"), Ok(150));
         assert_eq!(
             parse_age("151"),
             Err(ParseError::OutOfRange { value: 151, min: 0, max: 150 })
@@ -72,6 +76,23 @@ mod tests {
             parse_age("-1"),
             Err(ParseError::OutOfRange { value: -1, min: 0, max: 150 })
         );
+    }
+
+    #[test]
+    fn parse_age_reuses_parse_number() {
+        // если parse_number возвращает Empty, parse_age обязан вернуть ту же ошибку
+        assert_eq!(parse_age("   "), Err(ParseError::Empty));
+        assert_eq!(
+            parse_age("abc"),
+            Err(ParseError::NotANumber("abc".to_string()))
+        );
+    }
+
+    #[test]
+    fn divides() {
+        assert_eq!(divide(10, 2), Ok(5.0));
+        assert_eq!(divide(1, 4), Ok(0.25));
+        assert_eq!(divide(5, 0), Err(ParseError::DivisionByZero));
     }
 
     #[test]
@@ -85,28 +106,23 @@ mod tests {
             ParseError::OutOfRange { value: 200, min: 0, max: 150 }.to_string(),
             "200 вне диапазона 0..=150"
         );
-    }
-
-    #[test]
-    fn sums_csv() {
-        assert_eq!(sum_csv("1, 2, 3"), Ok(6));
-        assert_eq!(sum_csv(""), Err(ParseError::Empty));
-        assert_eq!(sum_csv(", ,"), Err(ParseError::Empty));
+        assert_eq!(
+            ParseError::DivisionByZero.to_string(),
+            "деление на ноль"
+        );
     }
 
     #[test]
     fn propagates_with_question_mark() {
+        assert_eq!(average_age("20", "30").unwrap(), 25.0);
+        assert_eq!(average_age("", "30"), Err(ParseError::Empty));
         assert_eq!(
-            sum_csv("1, x, 3"),
-            Err(ParseError::NotANumber("x".to_string()))
+            average_age("20", "abc"),
+            Err(ParseError::NotANumber("abc".to_string()))
         );
-        assert!(matches!(average_csv("1, x"), Err(ParseError::NotANumber(_))));
-    }
-
-    #[test]
-    fn averages() {
-        assert_eq!(average_csv("2, 4"), Ok(3.0));
-        assert_eq!(average_csv("10"), Ok(10.0));
-        assert_eq!(average_csv(""), Err(ParseError::Empty));
+        assert_eq!(
+            average_age("20", "200"),
+            Err(ParseError::OutOfRange { value: 200, min: 0, max: 150 })
+        );
     }
 }

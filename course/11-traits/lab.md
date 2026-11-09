@@ -35,7 +35,8 @@ cargo test -p l11-traits     # 4 красных
 
 ## Эксперимент
 
-Попробуй поменять сигнатуру на `&[&Circle]` и вызвать с `vec![&c, &s]` (круг и квадрат).
+Попробуй поменять сигнатуру на `&[&Circle]` и вызвать её с массивом из круга и квадрата:
+`[&c as &dyn Shape, &s as &dyn Shape]`.
 
 Запиши в `NOTES.md`, почему не компилируется и что это говорит про `dyn`.
 
@@ -83,15 +84,26 @@ impl Shape for Square {
 }
 
 pub fn total_area(shapes: &[&dyn Shape]) -> f64 {
-    shapes.iter().map(|s| s.area()).sum()
+    let mut total = 0.0;
+    for shape in shapes {
+        total += shape.area();
+    }
+    total
 }
 
-pub fn describe_all(shapes: &[&dyn Shape]) -> Vec<String> {
-    shapes.iter().map(|s| s.describe()).collect()
+pub fn describe_all(shapes: &[&dyn Shape]) -> String {
+    let mut all = String::new();
+    for shape in shapes {
+        if !all.is_empty() {
+            all.push('\n');
+        }
+        all.push_str(&shape.describe());
+    }
+    all
 }
 ```
 
-В `map` замыкание получает `&&dyn Shape`, но метод вызывается через авторазыменование.
+
 
 </details>
 

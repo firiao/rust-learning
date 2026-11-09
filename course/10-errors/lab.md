@@ -14,7 +14,7 @@
 Открывай `practice/l10-errors` — `src/lib.rs` с `todo!()` и восемью тестами.
 
 ```bash
-cargo test -p l10-errors     # 8 красных
+cargo test -p l10-errors     # 6 красных
 ```
 
 В заготовке уже есть:
@@ -28,27 +28,26 @@ cargo test -p l10-errors     # 8 красных
 **1. `impl Display for ParseError`** — `match` по вариантам, `write!(f, "...")`:
 
 ```text
-Empty                      -> "пустая строка"
-NotANumber(s)              -> "не число: {s:?}"     ← кавычки от {:?}
+Empty                          -> "пустая строка"
+NotANumber(s)                  -> "не число: {s:?}"     ← кавычки от {:?}
 OutOfRange { value, min, max } -> "{value} вне диапазона {min}..={max}"
+DivisionByZero                 -> "деление на ноль"
 ```
 
-**2. `parse_age(text) -> Result<u8, ParseError>`** — порядок важен:
+**2. `parse_number(text) -> Result<i64, ParseError>`** — `trim()`, пусто → `Empty`,
+`parse::<i64>()` с `map_err` → `NotANumber`.
 
-1. `trim()`, пусто → `Empty`;
-2. `parse::<i64>()`, ошибка → `NotANumber` (через `map_err`);
-3. вне `0..=150` → `OutOfRange`;
-4. `Ok(value as u8)`.
+**3. `parse_age(text) -> Result<u8, ParseError>`** — вызвать `parse_number(text)?`, проверить
+диапазон `0..=150`, вернуть `Ok(value as u8)`. Разбор **не дублировать**.
 
-**3. `sum_csv(text) -> Result<i64, ParseError>`** — разбить по `,`, пустые куски пропустить,
-если чисел не было → `Empty`.
+**4. `divide(a: i64, b: i64) -> Result<f64, ParseError>`** — на ноль `DivisionByZero`,
+иначе `Ok(a as f64 / b as f64)`.
 
-**4. `average_csv(text) -> Result<f64, ParseError>`** — вызвать `sum_csv(text)?` и разделить
-на количество, **не повторяя** разбор.
+**5. `average_age(first, second) -> Result<f64, ParseError>`** — два `?` и среднее.
 
 ## Эксперимент
 
-Поменяй тип возврата `average_csv` на `f64` и оставь внутри `let total = sum_csv(text)?;`.
+Поменяй тип возврата `average_age` на `f64` и оставь внутри `let a = parse_age(first)?;`.
 
 Запиши в `NOTES.md` текст ошибки: это ровно тот случай, про который говорит лекция.
 
@@ -63,9 +62,9 @@ OutOfRange { value, min, max } -> "{value} вне диапазона {min}..={ma
 
 ## Критерии приёмки
 
-- [ ] 8 тестов зелёные;
-- [ ] нигде нет `unwrap()` и `panic!()`;
-- [ ] `average_csv` переиспользует `sum_csv` через `?`, а не копирует разбор;
+- [ ] 6 тестов зелёные;
+- [ ] нигде нет `unwrap()` и `panic!()` в реализациях;
+- [ ] `parse_age` переиспользует `parse_number` через `?`, а не копирует разбор;
 - [ ] `clippy -D warnings` и `fmt --check` чистые после реализации;
 - [ ] в `NOTES.md` разобран эксперимент с `?` в функции без `Result`.
 
@@ -114,33 +113,48 @@ Ok(value as u8)
 </details>
 
 <details>
-<summary>`sum_csv` и `average_csv`</summary>
+<summary>`parse_number` и `parse_age`</summary>
 
 ```rust
-pub fn sum_csv(text: &str) -> Result<i64, ParseError> {
-    let mut total: i64 = 0;
-    let mut count = 0;
-    for part in text.split(',') {
-        let part = part.trim();
-        if part.is_empty() {
-            continue;
-        }
-        let value: i64 = part
-            .parse()
-            .map_err(|_| ParseError::NotANumber(part.to_string()))?;
-        total += value;
-        count += 1;
-    }
-    if count == 0 {
+pub fn parse_number(text: &str) -> Result<i64, ParseError> {
+    let trimmed = text.trim();
+    if trimmed.is_empty() {
         return Err(ParseError::Empty);
     }
-    Ok(total)
+    trimmed
+        .parse()
+        .map_err(|_| ParseError::NotANumber(trimmed.to_string()))
 }
 
-pub fn average_csv(text: &str) -> Result<f64, ParseError> {
-    let total = sum_csv(text)?;
-    let count = text.split(',').filter(|p| !p.trim().is_empty()).count();
-    Ok(total as f64 / count as f64)
+pub fn parse_age(text: &str) -> Result<u8, ParseError> {
+    let value = parse_number(text)?;
+    if !(0..=150).contains(&value) {
+        return Err(ParseError::OutOfRange { value, min: 0, max: 150 });
+    }
+    Ok(value as u8)
+}
+```
+
+`?` здесь делает то же, что `match` из лекции, только короче: ошибка `parse_number` уходит наверх
+как есть.
+
+</details>
+
+<details>
+<summary>`divide` и `average_age`</summary>
+
+```rust
+pub fn divide(a: i64, b: i64) -> Result<f64, ParseError> {
+    if b == 0 {
+        return Err(ParseError::DivisionByZero);
+    }
+    Ok(a as f64 / b as f64)
+}
+
+pub fn average_age(first: &str, second: &str) -> Result<f64, ParseError> {
+    let a = parse_age(first)?;
+    let b = parse_age(second)?;
+    Ok((a as f64 + b as f64) / 2.0)
 }
 ```
 

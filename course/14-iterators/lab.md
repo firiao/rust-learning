@@ -98,7 +98,7 @@ Some(sum / y_true.len() as f64)
 pub fn evens_squared(values: &[i32]) -> Vec<i32> {
     values
         .iter()
-        .filter(|&&n| n.rem_euclid(2) == 0)
+        .filter(|&&n| n % 2 == 0)
         .map(|&n| n * n)
         .collect()
 }
@@ -108,8 +108,9 @@ pub fn first_big(values: &[i32], limit: i32) -> Option<i32> {
 }
 ```
 
-`copied()` превращает `&i32` в `i32` — так проще сравнивать. `rem_euclid(2)` вместо `% 2`:
-`clippy` не любит `% == 0`, а для отрицательных `rem_euclid` ещё и корректнее.
+`copied()` превращает `&i32` в `i32` — так проще сравнивать. `n % 2 == 0` — остаток от деления;
+`clippy` предложит `is_multiple_of`, но этот метод в курсе не встречается, поэтому в заготовке
+стоит `#![allow(clippy::manual_is_multiple_of)]`.
 
 </details>
 
