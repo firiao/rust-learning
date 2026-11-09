@@ -31,42 +31,6 @@ pub fn longest_word_owned(text: &str) -> String {
     best_length_word
 }
 
-// ===== ЭКСПЕРИМЕНТЫ =====
-// Раскомментируй ОДИН блок, выполни `cargo check -p l05-ownership`,
-// прочитай ошибку, закомментируй обратно.
-
-// --- Блок 1: move при присваивании ---
-// pub fn experiment_1() {
-//     let s1 = String::from("привет");
-//     let s2 = s1;
-//     println!("{s1}");
-//     println!("{s2}");
-// }
-
-// --- Блок 2: move при передаче в функцию ---
-// pub fn experiment_2() {
-//     fn take(text: String) {
-//         println!("{text}");
-//     }
-//     let s = String::from("привет");
-//     take(s);
-//     println!("{s}");
-// }
-
-// --- Блок 3: Copy ---
-// pub fn experiment_3() {
-//     let a = 42;
-//     let b = a;
-//     println!("{a} {b}");
-// }
-
-// --- Блок 4: clone ---
-// pub fn experiment_4() {
-//     let s1 = String::from("привет");
-//     let s2 = s1.clone();
-//     println!("{s1} {s2}");
-// }
-
 #[cfg(test)]
 mod tests {
     use super::*;

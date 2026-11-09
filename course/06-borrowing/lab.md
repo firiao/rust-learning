@@ -90,8 +90,22 @@ cargo test -p l06-borrowing   # 6 красных
 ```
 
 1. Реализуй четыре функции.
-2. Раскомментируй эксперименты по одному (блоки в конце файла).
+2. Прогони эксперименты (ниже) — править и комментировать ничего не нужно.
 3. Запиши в `NOTES.md`, что показал каждый.
+
+## Эксперименты
+
+Три файла в `practice/l06-borrowing/examples/` с **намеренными** ошибками. Они не мешают тестам:
+cargo не собирает примеры без флага `--features experiments`.
+
+| Файл | Команда | Что ожидать |
+|---|---|---|
+| `e1_reader_vs_writer.rs` | `cargo check -p l06-borrowing --example e1_reader_vs_writer --features experiments` | `E0502` |
+| `e2_deref_method.rs` | `cargo check -p l06-borrowing --example e2_deref_method --features experiments` | `E0614` |
+| `e3_mut_without_mut.rs` | `cargo check -p l06-borrowing --example e3_mut_without_mut --features experiments` | `E0596` |
+
+Почему так: ошибка компиляции — не то, что можно поймать тестом. Пока файл с ошибкой входит
+в сборку, весь крейт не собирается. Поэтому эксперименты вынесены в отдельные цели.
 
 ## Дополнительное задание — сигнатуру придумываешь сам
 

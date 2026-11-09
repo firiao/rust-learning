@@ -4,3 +4,24 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+
+# Эксперименты — отдельные цели, которые cargo НЕ собирает по умолчанию.
+# Включаются флагом --features experiments.
+[features]
+experiments = []
+
+[[example]]
+name = "e1_move_assign"
+required-features = ["experiments"]
+
+[[example]]
+name = "e2_move_into_fn"
+required-features = ["experiments"]
+
+[[example]]
+name = "e3_copy"
+required-features = ["experiments"]
+
+[[example]]
+name = "e4_clone"
+required-features = ["experiments"]

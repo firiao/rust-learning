@@ -7,11 +7,11 @@
 pub fn last_word(text: &str) -> &str {
     let mut index_of_last_spacewhite: usize = 0;
     for (i, ch) in text.char_indices() {
-        if ch == ' ' {
+        if ch.is_whitespace() {
             index_of_last_spacewhite = i;
         }
     }
-    &text[index_of_last_spacewhite..].trim()
+    text[index_of_last_spacewhite..].trim()
 }
 
 /// Дописывает '!' в конец строки прямо на месте.
@@ -31,7 +31,7 @@ pub fn push_bang(text: &mut String) {
 /// sum_slice(&array[0..2])  // кусок массива    (уже &[i32])
 /// ```
 pub fn sum_slice(values: &[i32]) -> i32 {
-    let mut sum: i32 = 0; 
+    let mut sum: i32 = 0;
     for i in values {
         sum += i;
     }
@@ -43,7 +43,7 @@ pub fn count_char(text: &str, target: char) -> usize {
     let mut counter: usize = 0;
     for (_, ch) in text.char_indices() {
         if ch == target {
-            counter +=1;
+            counter += 1;
         }
     }
     counter
@@ -51,53 +51,33 @@ pub fn count_char(text: &str, target: char) -> usize {
 
 pub fn count_words(text: &str) -> usize {
     let mut counter: usize = 0;
-    
-    if text.trim() == ""  {
+    if text.trim() == "" {
         return counter;
     }
-
-    for (_, ch) in text.trim().char_indices() {
-        if ch == ' ' {
+    let mut last_char_was_spacewhite = false;
+    for i in text.trim().chars() {
+        if i.is_whitespace() && !last_char_was_spacewhite {
             counter += 1;
+            last_char_was_spacewhite = true;
+        } else if !i.is_whitespace() {
+            last_char_was_spacewhite = false;
         }
     }
     counter + 1
 }
 
-// ===== ЭКСПЕРИМЕНТЫ =====
-
-// --- Блок 1: читатель мешает писателю ---
-// pub fn experiment_1() {
-//     let mut s = String::from("привет");
-//     let r = &s;
-//     let w = &mut s;
-//     println!("{r}");
-//     w.push('!');
-// }
-
-// --- Блок 2: `*` перед вызовом метода ---
-// pub fn experiment_2() {
-//     let text = &mut String::from("a");
-//     *text.push('!');
-// }
-
-// --- Блок 3: `&mut` без mut ---
-// pub fn experiment_3() {
-//     let s = String::from("a");
-//     let r = &mut s;
-//     r.push('!');
-// }
-
 #[cfg(test)]
 mod tests {
     use super::*;
-    
+
     #[test]
     fn counting_words() {
         assert_eq!(count_words("Тут три слова"), 3);
         assert_eq!(count_words("Тут два "), 2);
         assert_eq!(count_words("Одно"), 1);
         assert_eq!(count_words(" "), 0);
+        assert_eq!(count_words(" Двойной  пробел"), 2);
+        assert_eq!(count_words(" С \t Табуляцией "), 2);
     }
 
     #[test]
@@ -131,9 +111,9 @@ mod tests {
     #[test]
     fn sums_any_slice() {
         let array = [1, 2, 3];
-        assert_eq!(sum_slice(&array), 6);        // массив -> срез
-        assert_eq!(sum_slice(&array[0..2]), 3);  // кусок массива
-        assert_eq!(sum_slice(&[]), 0);           // пустой массив
+        assert_eq!(sum_slice(&array), 6); // массив -> срез
+        assert_eq!(sum_slice(&array[0..2]), 3); // кусок массива
+        assert_eq!(sum_slice(&[]), 0); // пустой массив
     }
 
     #[test]

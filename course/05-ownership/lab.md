@@ -33,13 +33,18 @@ cargo test -p l05-ownership   # 4 красных
 
 ## Эксперименты
 
-Главная часть. По одному блоку: раскомментировал → `cargo check -p l05-ownership` → прочитал →
-закомментировал.
+Эксперименты лежат отдельными файлами в `practice/l05-ownership/examples/` и **не мешают тестам**:
+cargo не собирает их без флага `--features experiments`.
 
-1. **Блок 1** — move при присваивании;
-2. **Блок 2** — move при передаче в функцию;
-3. **Блок 3** — `Copy`: ошибки нет;
-4. **Блок 4** — `clone`: ошибки нет.
+| Файл | Команда | Что ожидать |
+|---|---|---|
+| `e1_move_assign.rs` | `cargo check -p l05-ownership --example e1_move_assign --features experiments` | `E0382` |
+| `e2_move_into_fn.rs` | `cargo check -p l05-ownership --example e2_move_into_fn --features experiments` | `E0382` |
+| `e3_copy.rs` | `cargo run -p l05-ownership --example e3_copy --features experiments` | ошибки нет |
+| `e4_clone.rs` | `cargo run -p l05-ownership --example e4_clone --features experiments` | ошибки нет |
+
+Править и комментировать ничего не надо: файлы уже готовы, ошибки в них намеренные.
+Запиши в `NOTES.md`, что показал каждый.
 
 ## Критерии приёмки
 
