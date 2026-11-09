@@ -90,22 +90,7 @@ cargo test -p l06-borrowing   # 6 красных
 ```
 
 1. Реализуй четыре функции.
-2. Прогони эксперименты (ниже) — править и комментировать ничего не нужно.
-3. Запиши в `NOTES.md`, что показал каждый.
-
-## Эксперименты
-
-Три файла в `practice/l06-borrowing/examples/` с **намеренными** ошибками. Они не мешают тестам:
-cargo не собирает примеры без флага `--features experiments`.
-
-| Файл | Команда | Что ожидать |
-|---|---|---|
-| `e1_reader_vs_writer.rs` | `cargo check -p l06-borrowing --example e1_reader_vs_writer --features experiments` | `E0502` |
-| `e2_deref_method.rs` | `cargo check -p l06-borrowing --example e2_deref_method --features experiments` | `E0614` |
-| `e3_mut_without_mut.rs` | `cargo check -p l06-borrowing --example e3_mut_without_mut --features experiments` | `E0596` |
-
-Почему так: ошибка компиляции — не то, что можно поймать тестом. Пока файл с ошибкой входит
-в сборку, весь крейт не собирается. Поэтому эксперименты вынесены в отдельные цели.
+2. Запиши в `NOTES.md` ответы на вопросы из критериев.
 
 ## Дополнительное задание — сигнатуру придумываешь сам
 
@@ -120,7 +105,7 @@ cargo не собирает примеры без флага `--features experim
 - [ ] `last_word` возвращает `&str`, нигде нет `String::from` и `to_string`;
 - [ ] `sum_slice` не создаёт новых коллекций;
 - [ ] `clippy -D warnings` и `fmt --check` чистые после реализации;
-- [ ] в `NOTES.md` разобраны три эксперимента и выбор сигнатуры `count_words`.
+- [ ] в `NOTES.md` записаны ответы про `*text.push` и выбор сигнатуры `count_words`.
 
 ## Подсказки
 
@@ -174,12 +159,6 @@ total
 
 <details>
 <summary>Эксперименты</summary>
-
-**1:** `E0502` — `cannot borrow 's' as mutable because it is also borrowed as immutable`.
-
-**2:** `E0614` — `type '()' cannot be dereferenced`. Разбор — в разделе про `*text.push`.
-
-**3:** `E0596` — `cannot borrow 's' as mutable, as it is not declared as mutable` + `help: consider changing this to be mutable`.
 
 </details>
 

@@ -4,20 +4,3 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-
-# Эксперименты — отдельные цели, которые cargo НЕ собирает по умолчанию.
-# Включаются флагом --features experiments.
-[features]
-experiments = []
-
-[[example]]
-name = "e1_reader_vs_writer"
-required-features = ["experiments"]
-
-[[example]]
-name = "e2_deref_method"
-required-features = ["experiments"]
-
-[[example]]
-name = "e3_mut_without_mut"
-required-features = ["experiments"]
