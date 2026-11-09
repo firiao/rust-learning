@@ -1,5 +1,7 @@
 //! Спека лабы 25. Эти тесты — твоё ТЗ: читай их и пиши код в src/lib.rs.
 
+use ndarray::Array1;
+
 use l25_ndarray::*;
 
 #[test]

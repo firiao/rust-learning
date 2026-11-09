@@ -1,5 +1,7 @@
 //! Спека лабы 27. Эти тесты — твоё ТЗ: читай их и пиши код в src/lib.rs.
 
+use candle_core::{Device, Result};
+
 use l27_candle::*;
 
 #[test]
