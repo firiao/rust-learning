@@ -5,7 +5,13 @@
 /// `"привет мир"` -> `"мир"`, `"привет"` -> `"привет"`, `""` -> `""`.
 /// Слово начинается сразу после последнего пробела, поэтому `"привет "` -> `""`.
 pub fn last_word(text: &str) -> &str {
-    todo!()
+    let mut index_of_last_spacewhite: usize = 0;
+    for (i, ch) in text.char_indices() {
+        if ch == ' ' {
+            index_of_last_spacewhite = i;
+        }
+    }
+    &text[index_of_last_spacewhite..].trim()
 }
 
 /// Дописывает '!' в конец строки прямо на месте.
@@ -13,7 +19,7 @@ pub fn last_word(text: &str) -> &str {
 /// Владение остаётся у вызывающего: функция получает `&mut String`,
 /// а не `String`. Поэтому после вызова строка на месте — только длиннее.
 pub fn push_bang(text: &mut String) {
-    todo!()
+    text.push('!');
 }
 
 /// Сумма чисел в готовом срезе.
@@ -25,12 +31,37 @@ pub fn push_bang(text: &mut String) {
 /// sum_slice(&array[0..2])  // кусок массива    (уже &[i32])
 /// ```
 pub fn sum_slice(values: &[i32]) -> i32 {
-    todo!()
+    let mut sum: i32 = 0; 
+    for i in values {
+        sum += i;
+    }
+    sum
 }
 
 /// Сколько раз символ `target` встречается в тексте.
 pub fn count_char(text: &str, target: char) -> usize {
-    todo!()
+    let mut counter: usize = 0;
+    for (_, ch) in text.char_indices() {
+        if ch == target {
+            counter +=1;
+        }
+    }
+    counter
+}
+
+pub fn count_words(text: &str) -> usize {
+    let mut counter: usize = 0;
+    
+    if text.trim() == ""  {
+        return counter;
+    }
+
+    for (_, ch) in text.trim().char_indices() {
+        if ch == ' ' {
+            counter += 1;
+        }
+    }
+    counter + 1
 }
 
 // ===== ЭКСПЕРИМЕНТЫ =====
@@ -60,6 +91,14 @@ pub fn count_char(text: &str, target: char) -> usize {
 #[cfg(test)]
 mod tests {
     use super::*;
+    
+    #[test]
+    fn counting_words() {
+        assert_eq!(count_words("Тут три слова"), 3);
+        assert_eq!(count_words("Тут два "), 2);
+        assert_eq!(count_words("Одно"), 1);
+        assert_eq!(count_words(" "), 0);
+    }
 
     #[test]
     fn finds_last_word() {
