@@ -83,9 +83,6 @@ mod tests {
         let (c, s) = sample();
         let shapes: [&dyn Shape; 2] = [&c, &s];
         let text = describe_all(&shapes);
-        let lines: Vec<&str> = text.lines().collect();
-        assert_eq!(lines.len(), 2);
-        assert!(lines[0].starts_with("круг"));
-        assert!(lines[1].starts_with("квадрат"));
+        assert_eq!(text, "круг площадью 3.14\nквадрат площадью 4.00");
     }
 }

@@ -46,7 +46,7 @@ mod tests {
     #[test]
     fn counts_with_predicate() {
         let values = [1, 2, 3, 4, 5];
-        assert_eq!(count_if(&values, |n| n.rem_euclid(2) == 0), 2);
+        assert_eq!(count_if(&values, |n| *n == 2), 1);
         assert_eq!(count_if(&values, |n| *n > 2), 3);
         assert_eq!(count_if(&[], |_| true), 0);
     }

@@ -24,8 +24,11 @@ cargo test -p l14-iterators   # 5 красных
 **2. `mse(y_true, y_pred) -> Option<f64>`** — `zip` + `map` + `sum`, делённое на длину.
 Это формула MSE: `(1/n)·Σ(t-p)²`.
 
-**3. `evens_squared(values) -> Vec<i32>`** — `filter` + `map` + `collect`.
-Здесь пригодится `|&&n|` в `filter` и `|&n|` в `map`.
+**3. `evens_squared(values) -> Vec<i32>`** — квадраты чётных чисел: `[1,2,3,4]` → `[4, 16]`.
+`filter` + `map` + `collect`. Здесь пригодится `|&&n|` в `filter` и `|&n|` в `map`.
+
+`|n| ...` — замыкание (функция без имени). Подробно они будут в лекции 15; пока читай это как
+«вот тебе элемент — сделай с ним вот это».
 
 **4. `first_big(values, limit) -> Option<i32>`** — `find`.
 
