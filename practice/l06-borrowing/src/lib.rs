@@ -1,10 +1,10 @@
 //! Заимствование: `&str`, `&mut`, `*`, срезы. Только лекции 1–6.
 
-/// Возвращает первое слово строки — срез входных данных, без копирования.
+/// Возвращает **последнее** слово строки — срез входных данных, без копирования.
 ///
-/// `"привет мир"` -> `"привет"`, `"привет"` -> `"привет"`, `""` -> `""`.
-/// Слово заканчивается на первом пробеле.
-pub fn first_word(text: &str) -> &str {
+/// `"привет мир"` -> `"мир"`, `"привет"` -> `"привет"`, `""` -> `""`.
+/// Слово начинается сразу после последнего пробела, поэтому `"привет "` -> `""`.
+pub fn last_word(text: &str) -> &str {
     todo!()
 }
 
@@ -18,8 +18,12 @@ pub fn push_bang(text: &mut String) {
 
 /// Сумма чисел в готовом срезе.
 ///
-/// Срез создаёт **вызывающий**: `&array` или `&array[0..2]`.
-/// Функция ничего не копирует, только читает.
+/// Срез создаёт **вызывающий** — функция его не строит:
+///
+/// ```text
+/// sum_slice(&array)        // массив целиком   (&[i32; 3] -> &[i32])
+/// sum_slice(&array[0..2])  // кусок массива    (уже &[i32])
+/// ```
 pub fn sum_slice(values: &[i32]) -> i32 {
     todo!()
 }
@@ -40,16 +44,13 @@ pub fn count_char(text: &str, target: char) -> usize {
 //     w.push('!');
 // }
 
-// --- Блок 2: два писателя ---
+// --- Блок 2: `*` перед вызовом метода ---
 // pub fn experiment_2() {
-//     let mut s = String::from("a");
-//     let a = &mut s;
-//     let b = &mut s;
-//     a.push('1');
-//     b.push('2');
+//     let text = &mut String::from("a");
+//     *text.push('!');
 // }
 
-// --- Блок 3: &mut без mut ---
+// --- Блок 3: `&mut` без mut ---
 // pub fn experiment_3() {
 //     let s = String::from("a");
 //     let r = &mut s;
@@ -61,19 +62,23 @@ mod tests {
     use super::*;
 
     #[test]
-    fn finds_first_word() {
-        assert_eq!(first_word("привет мир"), "привет");
-        assert_eq!(first_word("привет"), "привет");
-        assert_eq!(first_word(""), "");
+    fn finds_last_word() {
+        assert_eq!(last_word("привет мир"), "мир");
+        assert_eq!(last_word("привет"), "привет");
+        assert_eq!(last_word(""), "");
     }
 
     #[test]
-    fn first_word_is_a_slice_not_a_copy() {
+    fn last_word_is_a_slice_not_a_copy() {
         let text = String::from("раз два");
-        let word = first_word(&text);
-        assert_eq!(word, "раз");
-        // 3 символа кириллицы = 6 байт, срез «раз» тоже 6 байт
-        assert_eq!(word.len(), 6);
+        let word = last_word(&text);
+        assert_eq!(word, "два");
+        assert_eq!(word.len(), 6); // 3 кириллических символа = 6 байт
+    }
+
+    #[test]
+    fn trailing_space_gives_empty_word() {
+        assert_eq!(last_word("привет "), "");
     }
 
     #[test]
@@ -87,9 +92,9 @@ mod tests {
     #[test]
     fn sums_any_slice() {
         let array = [1, 2, 3];
-        assert_eq!(sum_slice(&array), 6);
-        assert_eq!(sum_slice(&array[0..2]), 3);
-        assert_eq!(sum_slice(&[]), 0);
+        assert_eq!(sum_slice(&array), 6);        // массив -> срез
+        assert_eq!(sum_slice(&array[0..2]), 3);  // кусок массива
+        assert_eq!(sum_slice(&[]), 0);           // пустой массив
     }
 
     #[test]
