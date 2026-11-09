@@ -4,27 +4,67 @@
 
 /// Сумма чисел от 1 до `limit` включительно, через `while`.
 pub fn sum_while(limit: u32) -> u32 {
-    todo!()
+    let mut result: u32 = 0;
+    for i in 1..=limit {
+        result += i;
+    }
+    result
 }
 
 /// Сколько цифр в числе (0 — одна цифра).
 pub fn count_digits(n: u64) -> u32 {
-    todo!()
+    if n == 0 {
+        return 1;
+    }
+    let mut n = n;
+    let mut count = 0;
+    while n > 0 {
+        count += 1;
+        n /= 10;
+    }
+    count
 }
 
 /// Наибольшая цифра числа. Для 0 — 0.
-pub fn max_digit(n: u64) -> u8 {
-    todo!()
+pub fn max_digit(mut n: u64) -> u8 {
+    let mut digit_max: u8 = 0;
+    if n < 10 {
+        let n: u8 = n.try_into().unwrap();
+        return n;
+    }
+
+    while n > 0 {
+        let mut digit_n: u8 = { n % 10 }.try_into().unwrap();
+        if digit_n > digit_max {
+            digit_max = digit_n;
+        }
+        digit_n = { n % 10 }.try_into().unwrap();
+        n = n / 10;
+    }
+    digit_max
 }
 
 /// Простое ли число. Через `for` по диапазону.
 pub fn is_prime(n: u32) -> bool {
-    todo!()
+    if n == 0 {
+        return false;
+    }
+    if n == 1 {
+        return false;
+    }
+    for i in 2..n {
+        if n % i == 0 {
+            return false;
+        }
+    }
+    true
 }
 
 /// Печатает таблицу умножения для `n` от 1 до 5 и ничего не возвращает.
 pub fn print_table(n: u32) {
-    todo!()
+    for i in 1..=5 {
+        println!("{} * {} = {}", n, i, n * i);
+    }
 }
 
 #[cfg(test)]

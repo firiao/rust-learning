@@ -2,22 +2,33 @@
 
 /// Забирает владение, дописывает '!' и возвращает обратно.
 pub fn append_bang(mut text: String) -> String {
-    todo!()
+    text.push('!');
+    text
 }
 
 /// Дописывает два '!' — вызвать `push` дважды.
 pub fn append_twice(mut text: String) -> String {
-    todo!()
+    text.push_str("!!");
+    text
 }
 
 /// Copy-тип: принимает по значению, но вызывающий не теряет переменную.
 pub fn double(n: i32) -> i32 {
-    todo!()
+    n * 2
 }
 
 /// Самое длинное слово (по числу символов). При равенстве — первое.
 pub fn longest_word_owned(text: &str) -> String {
-    todo!()
+    let mut best_length = 0;
+    let mut best_length_word = String::from("");
+    for word in text.split_whitespace() {
+        let word_length = word.chars().count();
+        if word_length > best_length {
+            best_length = word_length;
+            best_length_word = String::from(word); 
+        }
+    }
+    best_length_word
 }
 
 // ===== ЭКСПЕРИМЕНТЫ =====
