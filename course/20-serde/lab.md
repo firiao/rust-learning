@@ -9,25 +9,22 @@
 
 Научиться превращать структуру в JSON и обратно — и понимать, что происходит с пропущенными полями.
 
-## Крейт уже создан
+## В крейте только спека
 
-Открывай `practice/l20-serde`. Структура `Config` уже описана с атрибутами:
+`practice/l20-*` содержит **только тесты** — файл `tests/spec.rs`. Никаких структур, функций
+и заготовок с `todo!()` там нет: всё пишешь ты.
 
-```rust
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
-pub struct Config {
-    pub hidden_dim: usize,
-    #[serde(default = "default_epochs")]
-    pub epochs: usize,
-    #[serde(default)]
-    pub verbose: bool,
-}
-```
+**Тесты — это и есть ТЗ.** В них видно:
 
-Зависимости `serde` и `serde_json` уже в `Cargo.toml`.
+- как называются функции и типы;
+- какие у них аргументы и что они возвращают;
+- какое поведение считается правильным (это и есть требования).
+
+Открывай `tests/spec.rs` и начинай с первого теста. Пока код не написан, `cargo test -p <пакет>`
+не компилируется — это нормально, спека ещё не выполнена.
 
 ```bash
-cargo test -p l20-serde      # 5 красных
+cargo test -p l20-serde    # сначала ошибки компиляции, потом красные тесты
 ```
 
 ## Реализуй
@@ -46,12 +43,6 @@ cargo test -p l20-serde      # 5 красных
 безопасен — но только если ты можешь объяснить почему. В `NOTES.md` напиши одну строку:
 почему для `Config` ошибка сериализации невозможна.
 
-## Эксперимент
-
-Убери `#[serde(default = "default_epochs")]` у поля `epochs` и запусти тест `defaults_are_applied`.
-
-Запиши в `NOTES.md`: что изменилось и почему.
-
 ## Дополнительное задание — проектируешь сам
 
 Добавь в `Config` поле с `#[serde(rename = "...")]` и `#[serde(skip_serializing_if = "Option::is_none")]`.
@@ -65,7 +56,6 @@ cargo test -p l20-serde      # 5 красных
 - [ ] `roundtrip` проходит: `Config` → JSON → `Config` даёт то же значение;
 - [ ] `missing_required_field_is_error` проходит: без `hidden_dim` — ошибка;
 - [ ] `clippy -D warnings` и `fmt --check` чистые после реализации;
-- [ ] в `NOTES.md` разобран эксперимент с `default`.
 
 ## Подсказки
 
