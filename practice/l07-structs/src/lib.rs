@@ -93,6 +93,6 @@ mod tests {
         let r = Rectangle::new(1.0, 1.0);
         let copy = r; // Copy: r остаётся живым
         assert_eq!(r, copy);
-        assert!(format!("{r:?}").contains("Rectangle"));
+        assert_eq!(format!("{r:?}"), "Rectangle { width: 1.0, height: 1.0 }");
     }
 }
