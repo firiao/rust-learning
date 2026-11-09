@@ -12,7 +12,7 @@
 
 ## Крейт уже создан
 
-Открывай `practice/l05-ownership` — четыре `todo!()` и четыре теста плюс блок экспериментов.
+Открывай `practice/l05-ownership` — четыре `todo!()` и четыре теста.
 
 ```bash
 cargo test -p l05-ownership   # 4 красных
@@ -90,25 +90,6 @@ best
 
 `split_whitespace()` и `chars().count()` встречались в лекциях 2 и 5; `for` и `if` — в лекции 4.
 `String::from(word)` превращает `&str` в собственную строку.
-
-</details>
-
-<details>
-<summary>Эксперименты 1 и 2</summary>
-
-**1:** `error[E0382]: borrow of moved value: 's1'` — `let s2 = s1;` переместил владение.
-
-**2:** та же `E0382`, но помечено `value moved here` на вызове `take(s);`.
-Передача в функцию — тоже перемещение.
-
-</details>
-
-<details>
-<summary>Эксперименты 3 и 4</summary>
-
-**3:** ошибки нет — `i32` реализует `Copy`, `let b = a` копирует число.
-
-**4:** ошибки нет — `clone()` создаёт вторую `String` с собственной копией байтов в куче.
 
 </details>
 

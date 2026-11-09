@@ -157,11 +157,6 @@ total
 
 </details>
 
-<details>
-<summary>Эксперименты</summary>
-
-</details>
-
 ---
 
 **Готово?** Дальше — [лекция 7: структуры](../07-structs/lecture.md).
