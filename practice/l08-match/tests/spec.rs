@@ -23,9 +23,9 @@ fn describes_points() {
 
 #[test]
 fn computes() {
-    assert_eq!(apply("+", 2, 3), 5);
-    assert_eq!(apply("-", 2, 3), -1);
-    assert_eq!(apply("*", 2, 3), 6);
-    assert_eq!(apply("/", 6, 3), 2);
-    assert_eq!(apply("^", 2, 3), 0);
+    assert_eq!(apply('+', 2, 3), 5);
+    assert_eq!(apply('-', 2, 3), -1);
+    assert_eq!(apply('*', 2, 3), 6);
+    assert_eq!(apply('/', 6, 3), 2);
+    assert_eq!(apply('^', 2, 3), 0);
 }
